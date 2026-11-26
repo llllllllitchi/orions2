@@ -1,0 +1,9 @@
+{
+  "name": "orions2-lan",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Orions II local web game and LAN relay server",
+  "scripts": {
+    "start": "node lan-server.js"
+  }
+}

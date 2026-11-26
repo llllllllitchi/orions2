@@ -1,0 +1,1 @@
+const fs=require('fs'),vm=require('vm');const ctx={window:{}};vm.createContext(ctx);vm.runInContext(fs.readFileSync('js/cards2-data.js','utf8'),ctx);for(const c of ctx.window.CARDS.filter(x=>x.element==='death')) console.log('\n'+c.id+' | '+c.name+' | L'+c.level+' '+c.atk+'/'+c.hp+'\n A:'+c.ability+'\n S:'+c.spell);

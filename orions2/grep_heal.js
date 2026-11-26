@@ -1,0 +1,1 @@
+const fs=require('fs');const t=fs.readFileSync('js/effects2.js','utf8');const re=/E\['([^']+)'\][\s\S]*?onTurnStart:\s*async[^}]*healCreature[\s\S]*?\n\s*}/g;let m;while(m=re.exec(t)){console.log(m[1]);}

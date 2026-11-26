@@ -1,0 +1,27 @@
+{
+  "weight": 0.5,
+  "blend": "minmax",
+  "difficulty": "normal",
+  "games": 2000,
+  "unfinished": 0,
+  "bWins": 940,
+  "aWins": 1060,
+  "rate": 0.47,
+  "ci": [
+    0.44820442902962754,
+    0.4919105980264032
+  ],
+  "z": -2.68328157299975,
+  "pValue": 0.007290452310630746,
+  "first": {
+    "wins": 411,
+    "games": 1000
+  },
+  "second": {
+    "wins": 529,
+    "games": 1000
+  },
+  "avgTurns": 21.554,
+  "verdict": "INCONCLUSIVE",
+  "createdAt": "2026-11-20T04:35:20.541Z"
+}

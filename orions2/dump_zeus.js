@@ -1,0 +1,1 @@
+const fs=require('fs'),vm=require('vm');const ctx={window:{}};vm.createContext(ctx);vm.runInContext(fs.readFileSync('js/cards2-data.js','utf8'),ctx);const c=ctx.window.CARDS.find(x=>x.id==='zeus');console.log(c);

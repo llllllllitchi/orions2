@@ -1,0 +1,1 @@
+const fs=require('fs'),vm=require('vm');const ctx={window:{}};vm.createContext(ctx);vm.runInContext(fs.readFileSync('js/cards2-data.js','utf8'),ctx);for(const c of ctx.window.CARDS.filter(x=>/wall|fire/i.test(x.id)&&x.type==='MONSTER'))console.log(c.id,c.name,c.atk,c.ability,c.spell);

@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Orions 2 · 卡牌大师 — 决斗</title>
+<meta name="description" content="Orions 2: The Deckmasters 的网页复刻 — 六种元素、五条战线、116 张卡牌，支持单人与双人同屏对战。">
+<link rel="icon" type="image/png" href="assets/icon/favicon.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="rotate-screen">
+  <div class="rotate-inner">
+    <div class="rotate-icon">▭</div>
+    <h2>请横屏游玩</h2>
+    <p>把手机旋转到横屏，或开启系统的自动旋转。</p>
+  </div>
+</div>
+
+<div id="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">✦</div>
+      <div class="brand-text">
+        <h1>ORIONS <em>2</em></h1>
+        <span>卡牌大师</span>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button class="ghost-btn" id="btn-rules">规则</button>
+      <button class="ghost-btn" id="btn-codex">卡牌图鉴</button>
+      <button class="ghost-btn" id="btn-sound" aria-pressed="true">音效：开</button>
+      <label class="volume-wrap" title="音效音量">
+        <span>音量</span>
+        <input type="range" id="volume" min="0" max="100" value="35" aria-label="音效音量">
+      </label>
+      <button class="gold-btn small" id="btn-new">新对局</button>
+    </div>
+  </header>
+
+  <main class="arena">
+    <section class="battlefield">
+
+      <div class="wizard-bar enemy" id="enemy-bar">
+        <div class="portrait" id="enemy-portrait"><img src="assets/ui/avatar-death-1.png" alt=""></div>
+        <div class="wizard-meta">
+          <div class="wizard-name"><span id="enemy-name">对手</span><em id="enemy-deck">24 张</em></div>
+          <div class="hp-track"><i class="hp-lag" id="enemy-hp-lag"></i><div class="hp-fill" id="enemy-hp-fill"></div><span id="enemy-hp-text">50</span></div>
+        </div>
+        <div class="enemy-mana" id="enemy-mana" title="对手元素"></div>
+      </div>
+
+      <div class="board-frame">
+        <div class="board-shell">
+          <div class="board" id="board"></div>
+          <div class="board-glow"></div>
+          <div class="board-corner tl"></div><div class="board-corner tr"></div>
+          <div class="board-corner bl"></div><div class="board-corner br"></div>
+          <div class="vs-ribbon" id="turn-ribbon">你的回合</div>
+        </div>
+      </div>
+
+      <div class="wizard-bar player" id="player-bar">
+        <div class="portrait" id="player-portrait"><img src="assets/ui/avatar-life-1.png" alt=""></div>
+        <div class="wizard-meta">
+          <div class="wizard-name"><span id="player-name">法师</span><em id="player-deck">24 张</em></div>
+          <div class="hp-track"><i class="hp-lag" id="player-hp-lag"></i><div class="hp-fill" id="player-hp-fill"></div><span id="player-hp-text">50</span></div>
+        </div>
+        <div class="mana-pool" id="mana-pool"></div>
+        <button class="end-turn" id="btn-end"><span>结束回合</span><small>空格</small></button>
+      </div>
+
+      <div class="hand-area" id="hand-area">
+        <div class="element-tabs" id="element-tabs"></div>
+        <div class="hand-row" id="hand-row"></div>
+        <div class="hand-hint" id="hand-hint">选择元素，然后打出一张牌。</div>
+      </div>
+    </section>
+
+    <aside class="sidebar">
+      <div class="round-card">
+        <div class="round-label">决斗</div>
+        <div class="round-number" id="round-number">—</div>
+        <div class="round-turn" id="round-turn">准备中…</div>
+        <div class="round-cards">卡组 <span id="cards-left">24</span> 张</div>
+      </div>
+      <div class="deck-elements" id="deck-elements"></div>
+      <div class="log-head"><span>战斗记录</span><i></i><button class="log-export" id="btn-archive" title="历史对战存档 / 导入导出 / 重新训练 AI">存档</button><button class="log-export" id="btn-export" title="导出当前对局 JSON 战报">导出</button></div>
+      <div class="log" id="log"></div>
+      <div class="sidebar-foot">
+        <span class="dot"></span> <span id="status-text">一场奥里昂的决斗</span>
+      </div>
+    </aside>
+  </main>
+</div>
+
+<div id="fx-layer"></div>
+
+<div class="overlay" id="start-screen">
+  <div class="start-inner">
+    <div class="start-crest">✦</div>
+    <h2>ORIONS 2</h2>
+    <h3>卡牌大师</h3>
+    <p class="start-sub">116 张卡牌 · 六种元素 · 五条战线 · 最后站着的卡牌大师获胜</p>
+    <div class="start-art" id="start-art"></div>
+    <div class="difficulty">
+      <span>对手</span>
+      <div class="seg" id="difficulty">
+        <button data-diff="easy">学徒</button>
+        <button data-diff="normal" class="active">法师</button>
+        <button data-diff="hard">大法师</button>
+      </div>
+    </div>
+    <div class="challenge-row mode-row">
+      <span>对战模式</span>
+      <div class="seg" id="mode">
+        <button data-mode="single" class="active">单人</button>
+        <button data-mode="duo">双人同屏</button>
+        <button data-mode="lan">局域网</button>
+      </div>
+      <em id="mode-desc">你 vs 电脑</em>
+    </div>
+    <div class="challenge-row">
+      <span>决斗类型</span>
+      <select id="challenge">
+        <option value="none">标准决斗</option>
+        <option value="fire-ice">冰与火</option>
+        <option value="forbidden-spells">禁咒</option>
+        <option value="mana-pool">魔力之池</option>
+        <option value="cursed-fields">诅咒之地</option>
+        <option value="sandstorm">沙暴</option>
+        <option value="guardians">守护者</option>
+        <option value="random-flow">乱流</option>
+        <option value="sudden-death">猝死</option>
+        <option value="leverage">压制</option>
+      </select>
+      <em id="challenge-desc">经典 24 张随机卡组决斗。</em>
+    </div>
+    <div class="challenge-row">
+      <span>先手</span>
+      <select id="first-player">
+        <option value="0">玩家 1 先手</option>
+        <option value="1">玩家 2 先手</option>
+        <option value="random">随机先后</option>
+      </select>
+      <em id="first-desc">默认玩家 1 先手；随机由系统抽签。</em>
+    </div>
+    <div class="challenge-row deck-row" id="p0-deck-row">
+      <span id="deck-label">你的卡组</span>
+      <div class="seg" id="deck-mode">
+        <button data-deck="random" class="active">随机</button>
+        <button data-deck="custom">自组</button>
+        <button data-deck="draft">轮抽</button>
+      </div>
+      <select id="deck-select" class="deck-select" title="选择已保存的自组卡组"></select>
+      <button class="ghost-btn" id="btn-deckbuilder">编辑卡组</button>
+      <em id="deck-desc">24 张随机卡牌，每系 4 张，同一套内不重复。</em>
+    </div>
+    <div class="deck-preview hidden" id="deck-preview"></div>
+    <div class="challenge-row deck-row hidden" id="p2-deck-row">
+      <span>玩家 2 卡组</span>
+      <div class="seg" id="deck-mode2">
+        <button data-deck="random" class="active">随机</button>
+        <button data-deck="custom">自组</button>
+      </div>
+      <select id="deck-select2" class="deck-select" title="选择玩家 2 的自组卡组"></select>
+      <button class="ghost-btn" id="btn-deckbuilder2">编辑卡组</button>
+      <em id="deck-desc2">玩家 2 使用随机卡组。</em>
+    </div>
+    <div class="deck-preview hidden" id="deck-preview2"></div>
+    <div class="lan-panel hidden" id="lan-panel">
+      <div class="challenge-row lan-row">
+        <span>局域网</span>
+        <input id="lan-server" class="lan-input" placeholder="服务器地址（留空=当前）" title="例如 http://192.168.1.10:8901">
+        <input id="lan-code" class="lan-code" maxlength="8" placeholder="房间码" autocomplete="off">
+        <button class="ghost-btn" id="lan-host" type="button">创建房间</button>
+        <button class="ghost-btn" id="lan-join" type="button">加入</button>
+      </div>
+      <div class="lan-direct-row">
+        <button class="gold-btn small" id="lan-direct-host" type="button">创建直连（无需电脑）</button>
+        <button class="ghost-btn" id="lan-direct-join" type="button">加入直连</button>
+      </div>
+      <div class="lan-status" id="lan-status">直连：双方各复制/粘贴一次配对码；服务器模式：一台设备创建房间，另一台输入房间码。</div>
+      <button class="gold-btn small hidden" id="lan-start" type="button">开始局域网对战</button>
+    </div>
+    <button class="gold-btn big" id="btn-start">开始决斗</button>
+    <button class="text-btn" id="btn-start-rules">玩法说明</button>
+    <button class="text-btn" id="btn-start-codex">卡牌图鉴</button>
+    <button class="text-btn" id="btn-start-records">对战记录</button>
+    <button class="text-btn" id="btn-stats">对战统计</button>
+    <button class="text-btn hidden" id="btn-resume">返回决斗</button>
+    <p class="start-note">非官方网页复刻 · Orions 2 卡池（116 张）· 仅决斗模式</p>
+  </div>
+</div>
+
+<div class="overlay hidden" id="draft-screen">
+  <div class="draft-panel">
+    <div class="draft-head">
+      <div>
+        <h3>轮抽</h3>
+        <p id="draft-turn">玩家 1 选卡</p>
+      </div>
+      <button class="picker-close" id="draft-exit">✕</button>
+    </div>
+    <div class="draft-status">
+      <div class="draft-player p0"><b>玩家 1</b><span id="draft-p0">0 / 24</span><em id="draft-p0-el"></em></div>
+      <div class="draft-player p1"><b>玩家 2</b><span id="draft-p1">0 / 24</span><em id="draft-p1-el"></em></div>
+    </div>
+    <div class="draft-tabs" id="draft-tabs"></div>
+    <div class="draft-actions">
+      <button class="ghost-btn" id="draft-random" type="button">随机选一张</button>
+      <button class="ghost-btn" id="draft-undo" type="button">撤销上一手</button>
+      <button class="ghost-btn" id="draft-auto" type="button">剩余交给电脑</button>
+    </div>
+    <div class="draft-grid" id="draft-grid"></div>
+    <div class="draft-foot">
+      <span id="draft-pool">剩余 116 张</span>
+      <span>顺序：玩家 1 → 玩家 2 → 玩家 2 → 玩家 1，循环</span>
+    </div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="direct-screen">
+  <div class="direct-panel">
+    <div class="draft-head">
+      <div>
+        <h3>直连配对</h3>
+        <p id="direct-sub">无需服务器，复制配对码给对方</p>
+      </div>
+      <button class="picker-close" id="direct-exit">✕</button>
+    </div>
+    <div id="direct-body"></div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="pass-screen">
+  <div class="pass-inner">
+    <div class="pass-crest">✦</div>
+    <h2 id="pass-title">玩家 2 的回合</h2>
+    <p id="pass-sub">请把设备交给玩家 2</p>
+    <button class="gold-btn big" id="btn-pass">继续</button>
+  </div>
+</div>
+
+<div class="overlay hidden" id="mobile-picker">
+  <div class="picker-sheet">
+    <div class="picker-head">
+      <div>
+        <h3 id="picker-title">选择卡牌</h3>
+        <p id="picker-sub">点击卡牌，再选择空槽或目标</p>
+      </div>
+      <button class="picker-close" id="picker-close">✕</button>
+    </div>
+    <div class="picker-elements" id="picker-elements"></div>
+    <div class="picker-grid" id="picker-grid"></div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="end-screen">
+  <div class="end-inner">
+    <div class="end-crest" id="end-crest">✦</div>
+    <h2 id="end-title">胜利</h2>
+    <p id="end-sub">奥里昂属于你。</p>
+    <div class="end-stats" id="end-stats"></div>
+    <button class="text-btn" id="btn-end-log">查看战斗记录</button>
+    <button class="text-btn" id="btn-end-stats">查看对战统计</button>
+    <button class="gold-btn big" id="btn-again">再来一局</button>
+    <button class="text-btn" id="btn-end-menu">主菜单</button>
+  </div>
+</div>
+
+<div class="overlay hidden" id="battle-log-screen">
+  <div class="battle-log-inner">
+    <div class="battle-log-head">
+      <h2>战斗记录</h2>
+      <div class="bl-tabs" id="bl-tabs">
+        <button data-tab="log" class="active" type="button">本局战报</button>
+        <button data-tab="archive" type="button">历史对战</button>
+      </div>
+      <button class="text-btn" id="btn-battle-log-close">关闭</button>
+    </div>
+    <div class="bl-tools" id="bl-tools">
+      <div class="seg bl-filter" id="bl-filter">
+        <button data-side="all" class="active" type="button">全部</button>
+        <button data-side="p0" type="button">我方</button>
+        <button data-side="p1" type="button">敌方</button>
+      </div>
+      <span class="bl-hint" id="bl-hint">法术 / 生物 / 系统提示 使用不同字体与颜色</span>
+    </div>
+    <div class="log battle-log-list" id="battle-log-list"></div>
+    <div class="bl-archive hidden" id="bl-archive">
+      <div class="bl-archive-tools">
+        <button class="ghost-btn small" id="bl-import" type="button">导入记录</button>
+        <button class="ghost-btn small" id="bl-export-all" type="button">导出全部</button>
+        <button class="ghost-btn small" id="bl-refresh" type="button">刷新</button>
+        <button class="ghost-btn small" id="bl-train" type="button" title="用已保存的对局重新计算 AI 权重">重新训练 AI</button>
+        <button class="ghost-btn small danger" id="bl-clear" type="button">清空</button>
+        <input type="file" id="bl-file" accept=".json,application/json" multiple hidden>
+      </div>
+      <div class="bl-archive-note">
+        训练原理：每局用最终胜负给本局实际打出的牌与能力打分（胜 <b>+1</b> / 负 <b>−0.6</b>），
+        按出现次数收缩后限制在 <b>±2.5</b>，作为该卡的评分偏置叠加到 AI 估值上。
+        点「重新训练 AI」后历史对局会清空，但对战统计与训练出的模型保留。
+      </div>
+      <div class="bl-archive-list" id="bl-archive-list"></div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="stats-screen">
+  <div class="stats-inner">
+    <div class="stats-head">
+      <h2>对战统计</h2>
+      <button class="text-btn" id="btn-stats-close">关闭</button>
+    </div>
+    <div class="stats-body" id="stats-body"></div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="modal">
+  <div class="modal-card" id="modal-card">
+    <button class="modal-close" id="modal-close">✕</button>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="card-tip hidden" id="card-tip"></div>
+
+<script src="js/cards2-data.js"></script>
+<script src="js/effects2.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/cards2-zh.js"></script>
+<script src="js/ai-learned.js"></script>
+<script src="js/ai.js"></script>
+<script src="js/lan.js"></script>
+<script src="js/trainer.js"></script>
+<script src="js/records.js"></script>
+<script src="js/ui.js"></script>
+</body>
+</html>

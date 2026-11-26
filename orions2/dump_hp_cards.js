@@ -1,0 +1,1 @@
+const fs=require('fs'),vm=require('vm');const ctx={window:{}};vm.createContext(ctx);vm.runInContext(fs.readFileSync('js/cards2-data.js','utf8'),ctx);for(const id of ['zombie','shadow','restructure','elemental-water','lava-spider']){const c=ctx.window.CARDS.find(x=>x.id===id);console.log(id,c&&(c.ability||c.spell||''));}

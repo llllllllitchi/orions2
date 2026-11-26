@@ -1,0 +1,22 @@
+# 系统 / 编辑器 / 缓存
+.codebuddy/
+.DS_Store
+__pycache__/
+*.pyc
+*.swp
+
+# APK 与压缩包（构建产物，不入库）
+*.apk
+*.zip
+android/build/
+android/old/
+dl/
+
+# 签名密钥 —— 绝不可提交（泄露后任何人可用同一签名发布更新）
+android/keystore/
+
+# 训练样本大数据
+orions2/tools/data/sample.json
+
+# 安卓工程内的网页副本（由 orions2/ 同步生成，见 android/README.md）
+android/assets/www/

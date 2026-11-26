@@ -1,0 +1,1 @@
+const fs=require('fs'),vm=require('vm');const ctx={window:{}};vm.createContext(ctx);vm.runInContext(fs.readFileSync('js/cards2-data.js','utf8'),ctx);for(const id of ['lich','water-troll','vampire','scareling','hermit','enchanter']){const c=ctx.window.CARDS.find(x=>x.id===id);console.log(id,c&&{level:c.level,hp:c.hp,ability:c.ability,spell:c.spell});}

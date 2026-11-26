@@ -1,0 +1,1 @@
+const fs=require('fs'),vm=require('vm');const ctx={window:{}};vm.createContext(ctx);vm.runInContext(fs.readFileSync('js/cards2-data.js','utf8'),ctx);for(const c of ctx.window.CARDS.filter(x=>/reviv|resurrect|restruct|blend/i.test(x.id+' '+x.name)))console.log(c.id,c.name,c.type,c.element,c.level,c.ability||'',c.spell||'');

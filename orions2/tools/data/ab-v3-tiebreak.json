@@ -1,0 +1,27 @@
+{
+  "weight": 1,
+  "blend": "tiebreak",
+  "difficulty": "normal",
+  "games": 2000,
+  "unfinished": 0,
+  "bWins": 979,
+  "aWins": 1021,
+  "rate": 0.4895,
+  "ci": [
+    0.4676324975394536,
+    0.5114077619301571
+  ],
+  "z": -0.9391485505499125,
+  "pValue": 0.34765445190464006,
+  "first": {
+    "wins": 434,
+    "games": 1000
+  },
+  "second": {
+    "wins": 545,
+    "games": 1000
+  },
+  "avgTurns": 22.304,
+  "verdict": "INCONCLUSIVE",
+  "createdAt": "2026-11-20T04:38:49.521Z"
+}
